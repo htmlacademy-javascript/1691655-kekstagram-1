@@ -15,10 +15,10 @@ function checkPalindrom (word) {
 
 function extractNumber (str) {
   let result = '';
-
+  const numberRegExp = /\d/;
   str = str.toString();
   for (let i = 0; i < str.length; i++) {
-    if (str[i] > '0' && str[i] < '9') {
+    if (numberRegExp.test(str[i])) {
       result += str[i];
     }
   }
@@ -29,17 +29,17 @@ function extractNumber (str) {
 function buildFullString (initStr, len, addStr) {
   if (initStr.length >= len) {
     return initStr;
-  } else {
-    let result = initStr;
-    let currentAdd = '';
-    while (result.length < len) {
-      currentAdd = addStr.substring(0, len - result.length);
-      result = currentAdd + result;
-    }
-
-    return result;
   }
+
+  let result = initStr;
+  let currentAdd = '';
+  while (result.length < len) {
+    currentAdd = addStr.substring(0, len - result.length);
+    result = currentAdd + result;
+  }
+  return result;
 }
+
 
 function isStringProperLen (str, len) {
   return str.length <= len;
