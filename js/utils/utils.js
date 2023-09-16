@@ -1,3 +1,15 @@
+//случайное положительное целое из диапазона
+function getRandomInt (startRange, finishRange) {
+  if (startRange < 0 || finishRange < 0) {
+    throw new Error('Значения границ диапазона не должны быть отрицательными');
+  } else if (startRange > finishRange) {
+    throw new Error('Начальная граница диапазона не должна быть больше конечной');
+  } else if (startRange === finishRange) {
+    return startRange;
+  }
+  return Math.floor(Math.random() * (finishRange + 1 - startRange)) + startRange;
+}
+
 function checkPalindrom (word) {
   let result = true;
 
@@ -40,12 +52,8 @@ function buildFullString (initStr, len, addStr) {
   return result;
 }
 
-
 function isStringProperLen (str, len) {
   return str.length <= len;
 }
 
-checkPalindrom('Лёша на полке клопа нашёл ');
-extractNumber('Лёша н235а полке кл5235опа нашёл 1');
-buildFullString('1', 2, '0');
-isStringProperLen('проверяемая строка', 18);
+export {getRandomInt, isStringProperLen, buildFullString, extractNumber, checkPalindrom};
