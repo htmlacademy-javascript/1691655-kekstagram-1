@@ -47,7 +47,7 @@ const createPost = (_, index) => {
   return {
     id: index + 1,
     url: `photos/${currentImageNumber}.jpg`,
-    description: 'строка — описание фотографии. Описание придумайте самостоятельно.',
+    description: `строка — описание фотографии ${index}. Описание придумайте самостоятельно.`,
     likes: getRandomInt(RateLikes.Min, RateLikes.Max),
     comments: Array.from({length: getRandomInt(0, MAX_COMMENTS_NUMBER)}, createComment),
   };
