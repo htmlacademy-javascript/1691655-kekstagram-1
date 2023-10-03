@@ -1,3 +1,4 @@
+
 //случайное положительное целое из диапазона
 function getRandomInt (startRange, finishRange) {
   if (startRange < 0 || finishRange < 0) {
@@ -56,4 +57,10 @@ function isStringProperLen (str, len) {
   return str.length <= len;
 }
 
-export {getRandomInt, isStringProperLen, buildFullString, extractNumber, checkPalindrom};
+function isProperHashtag (hashtag) {
+  const regexExp = /^#[^ !@#$%^&*(),.?":{}|<>]+$/gi;
+
+  return regexExp.test(hashtag) && hashtag.length < 21;
+}
+
+export {getRandomInt, isStringProperLen, buildFullString, extractNumber, checkPalindrom, isProperHashtag};

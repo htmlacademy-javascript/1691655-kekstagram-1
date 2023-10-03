@@ -686,7 +686,7 @@ main {
   width: 450px;
 
   margin: 0 auto;
-  margin-bottom: 20px;
+
   padding: 5px 10px;
 
   font-family: "Open Sans", "Arial", sans-serif;
@@ -694,6 +694,11 @@ main {
   color: #000000;
 
   border-radius: 5px;
+}
+
+/* чтобы сообщение pristine прилипало к своему полю */
+.img-upload__field-wrapper {
+  margin-bottom: 20px;
 }
 
 .text__description {
