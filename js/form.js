@@ -1,6 +1,7 @@
 import { isProperHashtag } from './utils.js';
 
 const MAX_HASHTAGS_NUMBER = 5;
+const MAX_COMMENT_LENGTH = 140;
 
 const input = document.querySelector('#upload-file');
 const editImageForm = document.querySelector('#upload-select-image');
@@ -8,7 +9,7 @@ const editImageContainer = editImageForm.querySelector('.img-upload__overlay');
 const editedImage = document.querySelector('.img-upload__preview img');
 
 
-const toDefaultValues = () => {
+const closeEditImageForm = () => {
   editImageContainer.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
   editImageForm.reset();
@@ -17,13 +18,13 @@ const toDefaultValues = () => {
 const onEscRemove = (evt) => {
   if (evt.key === 'Escape' || evt.key === 'Esc') {
     evt.preventDefault();
-    toDefaultValues();
+    closeEditImageForm();
     document.removeEventListener('keydown', onEscRemove);
   }
 };
 
 editImageForm.querySelector('#upload-cancel').addEventListener('click', () => {
-  toDefaultValues();
+  closeEditImageForm();
   document.removeEventListener('keydown', onEscRemove);
 });
 
@@ -71,7 +72,7 @@ hashtagsInput.addEventListener('keydown', (evt) => {
 const commnentsInput = editImageContainer.querySelector('.text__description');
 pristine.addValidator(
   commnentsInput,
-  (commentString) => commentString.length < 5,
+  (commentString) => commentString.length < MAX_COMMENT_LENGTH,
   'ошибка при вводе комментария'
 );
 commnentsInput.addEventListener('keydown', (evt) => {
