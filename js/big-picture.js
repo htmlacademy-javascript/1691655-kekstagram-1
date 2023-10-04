@@ -8,7 +8,7 @@ const loadMoreButton = bigPicture.querySelector('.comments-loader');
 const commentsList = bigPicture.querySelector('.social__comments');
 
 // Логика закрытия полноразмерного изображения
-const toDefaultValues = () => {
+const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
   loadMoreButton.classList.remove('hidden');
@@ -18,13 +18,13 @@ const toDefaultValues = () => {
 const onEscRemove = (evt) => {
   if (evt.key === 'Escape' || evt.key === 'Esc') {
     evt.preventDefault();
-    toDefaultValues();
+    closeBigPicture();
     document.removeEventListener('keydown', onEscRemove);
   }
 };
 
 bigPicture.querySelector('#picture-cancel').addEventListener('click', () => {
-  toDefaultValues();
+  closeBigPicture();
   document.removeEventListener('keydown', onEscRemove);
 });
 
@@ -62,10 +62,10 @@ picturesLinkList.forEach((picture) => {
     };
 
     let showedCommentsNumber = (commentsNumber <= ADD_POSTS_NUMBER) ? commentsNumber : ADD_POSTS_NUMBER;
-    let htmlFragment = (commentsNumber === 0)
+    let commentsInfoFragment = (commentsNumber === 0)
       ? 'комментариев пока нет..'
       : `${showedCommentsNumber} из <span class="comments-count">${commentsNumber}</span> комментариев`;
-    bigPicture.querySelector('.social__comment-count').innerHTML = htmlFragment;
+    bigPicture.querySelector('.social__comment-count').innerHTML = commentsInfoFragment;
 
     // Вывод комментариев
     if (commentsNumber <= ADD_POSTS_NUMBER) {
@@ -80,7 +80,8 @@ picturesLinkList.forEach((picture) => {
       // При нажатии на Загрузить еще
       const handleMoreCommentsClick = () => {
         // Если осталось загрузить последнюю порцию
-        if (commentsNumber - showedCommentsNumber <= ADD_POSTS_NUMBER) {
+        const lastCommentChungRemaining = commentsNumber - showedCommentsNumber <= ADD_POSTS_NUMBER;
+        if (lastCommentChungRemaining) {
 
           loadMoreButton.classList.add('hidden');
           loadMoreButton.removeEventListener('click', handleMoreCommentsClick);
@@ -89,8 +90,8 @@ picturesLinkList.forEach((picture) => {
             showNewComment(comment);
           });
           showedCommentsNumber += commentsNumber - showedCommentsNumber;
-          htmlFragment = `${showedCommentsNumber} из <span class="comments-count">${commentsNumber}</span> комментариев`;
-          bigPicture.querySelector('.social__comment-count').innerHTML = htmlFragment;
+          commentsInfoFragment = `${showedCommentsNumber} из <span class="comments-count">${commentsNumber}</span> комментариев`;
+          bigPicture.querySelector('.social__comment-count').innerHTML = commentsInfoFragment;
 
         // Если - порций осталось несколько
         } else {
@@ -99,8 +100,8 @@ picturesLinkList.forEach((picture) => {
             showNewComment(comment);
           });
           showedCommentsNumber += ADD_POSTS_NUMBER;
-          htmlFragment = `${showedCommentsNumber} из <span class="comments-count">${commentsNumber}</span> комментариев`;
-          bigPicture.querySelector('.social__comment-count').innerHTML = htmlFragment;
+          commentsInfoFragment = `${showedCommentsNumber} из <span class="comments-count">${commentsNumber}</span> комментариев`;
+          bigPicture.querySelector('.social__comment-count').innerHTML = commentsInfoFragment;
         }
       };
       loadMoreButton.addEventListener('click', handleMoreCommentsClick);
