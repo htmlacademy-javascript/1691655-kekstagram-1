@@ -12,17 +12,71 @@ const EFFECTS = [
     },
     start: 100,
     step: 1,
+    filter: 'none',
     connect: 'lower',
-  }
+  },
+  {
+    name: 'chrome',
+    range: {
+      min: 0,
+      max: 1,
+    },
+    start: 1,
+    step: .1,
+    filter: 'grayscale',
+    unit: '',
+  },
+  {
+    name: 'sepia',
+    range: {
+      min: 0,
+      max: 1,
+    },
+    start: 1,
+    step: .1,
+    filter: 'sepia',
+    unit: '',
+  },
+  {
+    name: 'marvin',
+    range: {
+      min: 0,
+      max: 100,
+    },
+    start: 100,
+    step: 1,
+    filter: 'invert',
+    unit: '%'
+  },
+  {
+    name: 'phobos',
+    range: {
+      min: 0,
+      max: 3,
+    },
+    start: 3,
+    step: .1,
+    filter: 'blur',
+    unit: 'px',
+  },
+  {
+    name: 'heat',
+    range: {
+      min: 0,
+      max: 3,
+    },
+    start: 3,
+    step: .1,
+    filter: 'brightness',
+    unit: '',
+  },
 ];
+const DEFAULT_EFFECT = EFFECTS[0];
 
 const editImageForm = document.querySelector('#upload-select-image');
 const fileUploadInput = editImageForm.querySelector('#upload-file');
 const editImageContainer = editImageForm.querySelector('.img-upload__overlay');
 const editedImage = editImageForm.querySelector('.img-upload__preview img');
-const scaleImageInput = editImageForm.querySelector('#scale-value');
-
-scaleImageInput.setAttribute('value', '100%');
 
 const closeEditImageForm = () => {
   editImageContainer.classList.add('hidden');
@@ -53,7 +107,10 @@ fileUploadInput.addEventListener('change', () => {
 
 // изменение масштаба изображения
 const convertScaleStringToDigit = (strValue) => parseInt(strValue.slice(0, -1), 10) / 100;
+const scaleImageInput = editImageForm.querySelector('#scale-value');
 let currentScale = scaleImageInput.value;
+
+scaleImageInput.setAttribute('value', '100%');
 editImageForm
   .querySelector('.scale__control--smaller')
   .addEventListener('click', () => {
@@ -74,35 +131,58 @@ editImageForm
   });
 
 // применение эффектов наложения
-const imageEffectsSet = editImageForm.querySelector('.img-upload__effects');
-const sliderElement = editImageContainer.querySelector('.img-upload__effect-level');
-let currentEffect = '';
+const imageEffectsSet = editImageContainer.querySelector('.img-upload__effects');
+const effectLevelContainer = editImageContainer.querySelector('.img-upload__effect-level');
+const sliderElement = effectLevelContainer.querySelector('.effect-level__slider');
+const effectLevelValue = effectLevelContainer.querySelector('.effect-level__value');
+// начальные значения
+let currentEffect = DEFAULT_EFFECT;
 noUiSlider.create(sliderElement, {
   range: {
-    min: EFFECTS[0].range.min,
-    max: EFFECTS[0].range.max,
+    min: currentEffect.range.min,
+    max: currentEffect.range.max,
   },
-  start: EFFECTS[0].start,
-  step: EFFECTS[0].step,
+  start: currentEffect.start,
+  step: currentEffect.step,
+  connect: 'lower',
 });
-sliderElement.noUiSlider.on('change', () => {
-  console.log(sliderElement.noUiSlider.get());
-});
+effectLevelValue.value = sliderElement.noUiSlider.get();
+effectLevelContainer.classList.add('hidden');
 
-// sliderElement.classList.add('hidden');
-imageEffectsSet.addEventListener('change', (evt) => {
+// обработчики
+const onChangeEffect = (evt) => {
   evt.preventDefault();
+  editedImage.classList.remove(`effects__preview--${currentEffect.name}`);
+  editedImage.style = '';
+  currentEffect = EFFECTS.find((el) => el.name === evt.target.value);
 
-  editedImage.classList.remove(`effects__preview--${currentEffect}`);
-  if (evt.target.value !== 'none') {
-    currentEffect = evt.target.value;
-    editedImage.classList.add(`effects__preview--${currentEffect}`);
-    sliderElement.classList.remove('hidden');
+  sliderElement.noUiSlider.updateOptions({
+    name: currentEffect.name,
+    range: {
+      min: currentEffect.range.min,
+      max: currentEffect.range.max,
+    },
+    start: currentEffect.start,
+    step: currentEffect.step,
+  });
 
+  if (currentEffect !== DEFAULT_EFFECT) {
+    effectLevelContainer.classList.remove('hidden');
+    editedImage.classList.add(`effects__preview--${currentEffect.name}`);
   } else {
-    sliderElement.classList.add('hidden');
+    effectLevelContainer.classList.add('hidden');
   }
+};
+
+sliderElement.noUiSlider.on('change', () => {
+  const sliderValue = sliderElement.noUiSlider.get();
+  editedImage.style.filter = (currentEffect === DEFAULT_EFFECT)
+    ? DEFAULT_EFFECT.filter
+    : `${currentEffect.filter}(${sliderValue}${currentEffect.unit})`;
+  effectLevelValue.value = sliderValue;
 });
+
+imageEffectsSet.addEventListener('change', onChangeEffect);
 
 // валидация полей хэштегов и комментария
 const pristine = new Pristine (editImageForm, {
