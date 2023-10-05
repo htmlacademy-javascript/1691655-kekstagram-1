@@ -3,6 +3,18 @@ import { isProperHashtag } from './utils.js';
 const MAX_HASHTAGS_NUMBER = 5;
 const MAX_COMMENT_LENGTH = 140;
 const IMAGE_SCALE_VALUES = ['25%', '50%', '75%', '100%'];
+const EFFECTS = [
+  {
+    name: 'none',
+    range: {
+      min: 0,
+      max: 100,
+    },
+    start: 100,
+    step: 1,
+    connect: 'lower',
+  }
+];
 
 const editImageForm = document.querySelector('#upload-select-image');
 const fileUploadInput = editImageForm.querySelector('#upload-file');
@@ -60,6 +72,37 @@ editImageForm
       editedImage.style.transform = `scale(${convertScaleStringToDigit(currentScale)})`;
     }
   });
+
+// применение эффектов наложения
+const imageEffectsSet = editImageForm.querySelector('.img-upload__effects');
+const sliderElement = editImageContainer.querySelector('.img-upload__effect-level');
+let currentEffect = '';
+noUiSlider.create(sliderElement, {
+  range: {
+    min: EFFECTS[0].range.min,
+    max: EFFECTS[0].range.max,
+  },
+  start: EFFECTS[0].start,
+  step: EFFECTS[0].step,
+});
+sliderElement.noUiSlider.on('change', () => {
+  console.log(sliderElement.noUiSlider.get());
+});
+
+// sliderElement.classList.add('hidden');
+imageEffectsSet.addEventListener('change', (evt) => {
+  evt.preventDefault();
+
+  editedImage.classList.remove(`effects__preview--${currentEffect}`);
+  if (evt.target.value !== 'none') {
+    currentEffect = evt.target.value;
+    editedImage.classList.add(`effects__preview--${currentEffect}`);
+    sliderElement.classList.remove('hidden');
+
+  } else {
+    sliderElement.classList.add('hidden');
+  }
+});
 
 // валидация полей хэштегов и комментария
 const pristine = new Pristine (editImageForm, {
