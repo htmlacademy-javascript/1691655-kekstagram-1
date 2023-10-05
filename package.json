@@ -17,6 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "nouislider": "^15.7.1",
     "pristine": "^0.0.1",
     "pristinejs": "^1.1.0"
   },
