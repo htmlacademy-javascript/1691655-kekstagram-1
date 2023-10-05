@@ -1,4 +1,5 @@
 import { posts } from './pictures.js';
+import { isEscEvent } from './utils.js';
 
 const ADD_POSTS_NUMBER = 5;
 
@@ -16,7 +17,7 @@ const closeBigPicture = () => {
 };
 
 const onEscRemove = (evt) => {
-  if (evt.key === 'Escape' || evt.key === 'Esc') {
+  if (isEscEvent(evt)) {
     evt.preventDefault();
     closeBigPicture();
     document.removeEventListener('keydown', onEscRemove);

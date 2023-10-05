@@ -1,4 +1,4 @@
-import { isProperHashtag } from './utils.js';
+import { isEscEvent, isProperHashtag } from './utils.js';
 
 const MAX_HASHTAGS_NUMBER = 5;
 const MAX_COMMENT_LENGTH = 140;
@@ -85,7 +85,7 @@ const closeEditImageForm = () => {
 };
 
 const onEscRemove = (evt) => {
-  if (evt.key === 'Escape' || evt.key === 'Esc') {
+  if (isEscEvent(evt)) {
     evt.preventDefault();
     closeEditImageForm();
     document.removeEventListener('keydown', onEscRemove);
@@ -197,14 +197,11 @@ const validateHashtags = (hashtagsString) => {
     return true;
   }
   const hashtags = hashtagsString.trim().split(/\s+/);
-  // проверка каждого хэштега
-  let isProperHashtags = hashtags.every(isProperHashtag);
-  // проверка наличия повторояющихся хэштегов
-  isProperHashtags = isProperHashtags && (new Set(hashtags)).size === hashtags.length;
-  // проверка количества хэштегов
-  isProperHashtags = isProperHashtags && hashtags.length <= MAX_HASHTAGS_NUMBER;
+  const isEveryHashtags = hashtags.every(isProperHashtag);
+  const isHashtagUnique = (new Set(hashtags)).size === hashtags.length;
+  const isAvailableHashtagsAmount = hashtags.length <= MAX_HASHTAGS_NUMBER;
 
-  return isProperHashtags;
+  return isEveryHashtags && isHashtagUnique && isAvailableHashtagsAmount;
 };
 pristine.addValidator(
   hashtagsInput,

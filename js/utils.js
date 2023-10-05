@@ -1,6 +1,6 @@
 
 //случайное положительное целое из диапазона
-function getRandomInt (startRange, finishRange) {
+export function getRandomInt (startRange, finishRange) {
   if (startRange < 0 || finishRange < 0) {
     throw new Error('Значения границ диапазона не должны быть отрицательными');
   } else if (startRange > finishRange) {
@@ -11,7 +11,7 @@ function getRandomInt (startRange, finishRange) {
   return Math.floor(Math.random() * (finishRange + 1 - startRange)) + startRange;
 }
 
-function checkPalindrom (word) {
+export function checkPalindrom (word) {
   let result = true;
 
   word = word.replace(/ /g, '').toLowerCase();
@@ -26,7 +26,7 @@ function checkPalindrom (word) {
   return result;
 }
 
-function extractNumber (str) {
+export function extractNumber (str) {
   let result = '';
   const numberRegExp = /\d/;
   str = str.toString();
@@ -39,7 +39,7 @@ function extractNumber (str) {
   return result;
 }
 
-function buildFullString (initStr, len, addStr) {
+export function buildFullString (initStr, len, addStr) {
   if (initStr.length >= len) {
     return initStr;
   }
@@ -53,14 +53,15 @@ function buildFullString (initStr, len, addStr) {
   return result;
 }
 
-function isStringProperLen (str, len) {
+export function isStringProperLen (str, len) {
   return str.length <= len;
 }
 
-function isProperHashtag (hashtag) {
+export const isProperHashtag = (hashtag) => {
   const regexExp = /^#[^ !@#$%^&*(),.?":{}|<>]+$/gi;
 
   return regexExp.test(hashtag) && hashtag.length < 21;
-}
+};
 
-export {getRandomInt, isStringProperLen, buildFullString, extractNumber, checkPalindrom, isProperHashtag};
+export const isEscEvent = (evt) => (evt.key === 'Escape' || evt.key === 'Esc');
+
