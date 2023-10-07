@@ -29,7 +29,6 @@ bigPicture.querySelector('#picture-cancel').addEventListener('click', () => {
 });
 
 // Логика отображения полноразмерного изображения
-
 export const onPictureClick = (evt, posts) => {
   const currentPost = posts.find((post) => post.id === parseInt(evt.target.id, 10));
 
@@ -107,5 +106,3 @@ export const onPictureClick = (evt, posts) => {
     loadMoreButton.addEventListener('click', handleMoreCommentsClick);
   }
 };
-
-

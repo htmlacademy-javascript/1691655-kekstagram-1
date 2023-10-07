@@ -1,5 +1,4 @@
 import { onPictureClick } from './big-picture.js';
-// import { createPosts } from './data.js';
 
 const picturePlace = document.querySelector('.pictures');
 const pictureTemplateFragment = document.querySelector('#picture').content;
@@ -7,11 +6,7 @@ const pictureTemplate = pictureTemplateFragment.querySelector('.picture');
 
 const picturesList = document.createDocumentFragment();
 
-// const randomPosts = createPosts();
-
-const drawPicutres = (posts) => {
-  console.log(posts);
-
+export const drawPicutres = (posts) => {
   posts.forEach((post) => {
     const newPicture = pictureTemplate.cloneNode(true);
 
@@ -24,7 +19,9 @@ const drawPicutres = (posts) => {
   });
 
   picturePlace.appendChild(picturesList);
-  picturePlace.addEventListener('click', (evt) => onPictureClick(evt, posts));
+  picturePlace
+    .querySelectorAll('.picture')
+    .forEach((pictureLink) => {
+      pictureLink.addEventListener('click', (evt) => onPictureClick(evt, posts));
+    });
 };
-
-export {drawPicutres};

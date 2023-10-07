@@ -1,22 +1,15 @@
+import { sendData } from './api.js';
 import { isEscEvent, isProperHashtag } from './utils.js';
 
 const MAX_HASHTAGS_NUMBER = 5;
 const MAX_COMMENT_LENGTH = 140;
 const IMAGE_SCALE_VALUES = ['25%', '50%', '75%', '100%'];
-const EFFECTS = [
-  {
-    name: 'none',
-    range: {
-      min: 0,
-      max: 100,
-    },
-    start: 100,
-    step: 1,
-    filter: 'none',
-    connect: 'lower',
-  },
-  {
-    name: 'chrome',
+const DEFAULT_FORM_VALUES = {
+  scale: IMAGE_SCALE_VALUES[3],
+  effect: 'none',
+};
+const EFFECTS = {
+  chrome: {
     range: {
       min: 0,
       max: 1,
@@ -26,8 +19,7 @@ const EFFECTS = [
     filter: 'grayscale',
     unit: '',
   },
-  {
-    name: 'sepia',
+  sepia: {
     range: {
       min: 0,
       max: 1,
@@ -37,8 +29,7 @@ const EFFECTS = [
     filter: 'sepia',
     unit: '',
   },
-  {
-    name: 'marvin',
+  marvin: {
     range: {
       min: 0,
       max: 100,
@@ -48,8 +39,7 @@ const EFFECTS = [
     filter: 'invert',
     unit: '%'
   },
-  {
-    name: 'phobos',
+  phobos: {
     range: {
       min: 0,
       max: 3,
@@ -59,8 +49,7 @@ const EFFECTS = [
     filter: 'blur',
     unit: 'px',
   },
-  {
-    name: 'heat',
+  heat: {
     range: {
       min: 0,
       max: 3,
@@ -70,20 +59,19 @@ const EFFECTS = [
     filter: 'brightness',
     unit: '',
   },
-];
-const DEFAULT_EFFECT = EFFECTS[0];
+};
 
 const editImageForm = document.querySelector('#upload-select-image');
 const fileUploadInput = editImageForm.querySelector('#upload-file');
 const editImageContainer = editImageForm.querySelector('.img-upload__overlay');
 const editedImage = editImageForm.querySelector('.img-upload__preview img');
 
+// const toDefaultFormValues
 const closeEditImageForm = () => {
   editImageContainer.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
   editImageForm.reset();
 };
-
 const onEscRemove = (evt) => {
   if (isEscEvent(evt)) {
     evt.preventDefault();
@@ -91,7 +79,6 @@ const onEscRemove = (evt) => {
     document.removeEventListener('keydown', onEscRemove);
   }
 };
-
 editImageForm.querySelector('#upload-cancel').addEventListener('click', () => {
   closeEditImageForm();
   document.removeEventListener('keydown', onEscRemove);
@@ -108,9 +95,9 @@ fileUploadInput.addEventListener('change', () => {
 // изменение масштаба изображения
 const convertScaleStringToDigit = (strValue) => parseInt(strValue.slice(0, -1), 10) / 100;
 const scaleImageInput = editImageForm.querySelector('#scale-value');
-let currentScale = scaleImageInput.value;
+let currentScale = DEFAULT_FORM_VALUES.scale;
+scaleImageInput.setAttribute('value', currentScale);
 
-scaleImageInput.setAttribute('value', '100%');
 editImageForm
   .querySelector('.scale__control--smaller')
   .addEventListener('click', () => {
@@ -136,51 +123,52 @@ const effectLevelContainer = editImageContainer.querySelector('.img-upload__effe
 const sliderElement = effectLevelContainer.querySelector('.effect-level__slider');
 const effectLevelValue = effectLevelContainer.querySelector('.effect-level__value');
 // начальные значения
-let currentEffect = DEFAULT_EFFECT;
-noUiSlider.create(sliderElement, {
-  range: {
-    min: currentEffect.range.min,
-    max: currentEffect.range.max,
-  },
-  start: currentEffect.start,
-  step: currentEffect.step,
-  connect: 'lower',
-});
-effectLevelValue.value = sliderElement.noUiSlider.get();
+let currentEffect = null;
 effectLevelContainer.classList.add('hidden');
 
 // обработчики
 const onChangeEffect = (evt) => {
   evt.preventDefault();
-  editedImage.classList.remove(`effects__preview--${currentEffect.name}`);
   editedImage.style = '';
-  currentEffect = EFFECTS.find((el) => el.name === evt.target.value);
+  let currentEffectName = evt.target.value;
+  currentEffect = EFFECTS[currentEffectName];
 
-  sliderElement.noUiSlider.updateOptions({
-    name: currentEffect.name,
-    range: {
-      min: currentEffect.range.min,
-      max: currentEffect.range.max,
-    },
-    start: currentEffect.start,
-    step: currentEffect.step,
-  });
-
-  if (currentEffect !== DEFAULT_EFFECT) {
+  if (currentEffect) {
     effectLevelContainer.classList.remove('hidden');
-    editedImage.classList.add(`effects__preview--${currentEffect.name}`);
+    editedImage.className = `effects__preview--${currentEffectName}`;
+    if (!sliderElement.noUiSlider) {
+      noUiSlider.create(sliderElement, {
+        range: {
+          min: currentEffect.range.min,
+          max: currentEffect.range.max,
+        },
+        start: currentEffect.start,
+        step: currentEffect.step,
+        connect: 'lower',
+      });
+      sliderElement.noUiSlider.on('change', () => {
+        const sliderValue = sliderElement.noUiSlider.get();
+        editedImage.style.filter = `${currentEffect.filter}(${sliderValue}${currentEffect.unit})`;
+        effectLevelValue.value = sliderValue;
+      });
+      effectLevelValue.value = sliderElement.noUiSlider.get();
+    } else {
+      currentEffectName = evt.target.value;
+      sliderElement.noUiSlider.updateOptions({
+        range: {
+          min: currentEffect.range.min,
+          max: currentEffect.range.max,
+        },
+        start: currentEffect.start,
+        step: currentEffect.step,
+      });
+    }
   } else {
+    editedImage.className = '';
     effectLevelContainer.classList.add('hidden');
+    sliderElement.noUiSlider.destroy();
   }
 };
-
-sliderElement.noUiSlider.on('change', () => {
-  const sliderValue = sliderElement.noUiSlider.get();
-  editedImage.style.filter = (currentEffect === DEFAULT_EFFECT)
-    ? DEFAULT_EFFECT.filter
-    : `${currentEffect.filter}(${sliderValue}${currentEffect.unit})`;
-  effectLevelValue.value = sliderValue;
-});
 
 imageEffectsSet.addEventListener('change', onChangeEffect);
 
@@ -227,9 +215,17 @@ commnentsInput.addEventListener('keydown', (evt) => {
   }
 });
 
-editImageForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  pristine.validate();
-});
+export const setFormSubmit = (onSuccess, onFail) => {
 
+  editImageForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    pristine.validate();
+    sendData(
+      () => onSuccess(),
+      () => onFail(),
+      new FormData(evt.target)
+    );
+    closeEditImageForm();
+  });
 
+};
