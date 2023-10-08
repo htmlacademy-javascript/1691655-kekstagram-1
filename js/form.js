@@ -4,10 +4,7 @@ import { isEscEvent, isProperHashtag } from './utils.js';
 const MAX_HASHTAGS_NUMBER = 5;
 const MAX_COMMENT_LENGTH = 140;
 const IMAGE_SCALE_VALUES = ['25%', '50%', '75%', '100%'];
-const DEFAULT_FORM_VALUES = {
-  scale: IMAGE_SCALE_VALUES[3],
-  effect: 'none',
-};
+const DEFAULT_IMAGE_SCALE = IMAGE_SCALE_VALUES[3];
 const EFFECTS = {
   chrome: {
     range: {
@@ -64,13 +61,33 @@ const EFFECTS = {
 const editImageForm = document.querySelector('#upload-select-image');
 const fileUploadInput = editImageForm.querySelector('#upload-file');
 const editImageContainer = editImageForm.querySelector('.img-upload__overlay');
+const effectLevelContainer = editImageContainer.querySelector('.img-upload__effect-level');
 const editedImage = editImageForm.querySelector('.img-upload__preview img');
+const scaleImageInput = editImageForm.querySelector('#scale-value');
 
-// const toDefaultFormValues
+let currentScale, currentEffect, currentEffectName;
+const convertScaleStringToDigit = (strValue) => parseInt(strValue.slice(0, -1), 10) / 100;
+const setImageScaleValue = (scale) => {
+  scaleImageInput.setAttribute('value', scale);
+  editedImage.style.transform = `scale(${convertScaleStringToDigit(scale)})`;
+};
+const toDefaultFormVaues = () => {
+  currentScale = DEFAULT_IMAGE_SCALE;
+  setImageScaleValue(currentScale);
+  editedImage.style = '';
+  editedImage.className = '';
+  currentEffect = null;
+  currentEffectName = null;
+  effectLevelContainer.classList.add('hidden');
+};
+
+toDefaultFormVaues();
+
 const closeEditImageForm = () => {
   editImageContainer.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
   editImageForm.reset();
+  toDefaultFormVaues();
 };
 const onEscRemove = (evt) => {
   if (isEscEvent(evt)) {
@@ -93,18 +110,12 @@ fileUploadInput.addEventListener('change', () => {
 });
 
 // изменение масштаба изображения
-const convertScaleStringToDigit = (strValue) => parseInt(strValue.slice(0, -1), 10) / 100;
-const scaleImageInput = editImageForm.querySelector('#scale-value');
-let currentScale = DEFAULT_FORM_VALUES.scale;
-scaleImageInput.setAttribute('value', currentScale);
-
 editImageForm
   .querySelector('.scale__control--smaller')
   .addEventListener('click', () => {
     if (currentScale !== IMAGE_SCALE_VALUES[0]) {
       currentScale = IMAGE_SCALE_VALUES[Math.max(0, IMAGE_SCALE_VALUES.indexOf(currentScale) - 1)];
-      scaleImageInput.setAttribute('value', currentScale);
-      editedImage.style.transform = `scale(${convertScaleStringToDigit(currentScale)})`;
+      setImageScaleValue(currentScale);
     }
   });
 editImageForm
@@ -112,25 +123,21 @@ editImageForm
   .addEventListener('click', () => {
     if (currentScale !== IMAGE_SCALE_VALUES[IMAGE_SCALE_VALUES.length - 1]) {
       currentScale = IMAGE_SCALE_VALUES[Math.min(IMAGE_SCALE_VALUES.length - 1, IMAGE_SCALE_VALUES.indexOf(currentScale) + 1)];
-      scaleImageInput.setAttribute('value', currentScale);
-      editedImage.style.transform = `scale(${convertScaleStringToDigit(currentScale)})`;
+      setImageScaleValue(currentScale);
     }
   });
 
 // применение эффектов наложения
 const imageEffectsSet = editImageContainer.querySelector('.img-upload__effects');
-const effectLevelContainer = editImageContainer.querySelector('.img-upload__effect-level');
 const sliderElement = effectLevelContainer.querySelector('.effect-level__slider');
 const effectLevelValue = effectLevelContainer.querySelector('.effect-level__value');
-// начальные значения
-let currentEffect = null;
-effectLevelContainer.classList.add('hidden');
 
 // обработчики
 const onChangeEffect = (evt) => {
   evt.preventDefault();
-  editedImage.style = '';
-  let currentEffectName = evt.target.value;
+  currentScale = DEFAULT_IMAGE_SCALE;
+  setImageScaleValue(currentScale);
+  currentEffectName = evt.target.value;
   currentEffect = EFFECTS[currentEffectName];
 
   if (currentEffect) {
@@ -186,7 +193,7 @@ const validateHashtags = (hashtagsString) => {
   }
   const hashtags = hashtagsString.trim().split(/\s+/);
   const isEveryHashtags = hashtags.every(isProperHashtag);
-  const isHashtagUnique = (new Set(hashtags)).size === hashtags.length;
+  const isHashtagUnique = new Set(hashtags).size === hashtags.length;
   const isAvailableHashtagsAmount = hashtags.length <= MAX_HASHTAGS_NUMBER;
 
   return isEveryHashtags && isHashtagUnique && isAvailableHashtagsAmount;
