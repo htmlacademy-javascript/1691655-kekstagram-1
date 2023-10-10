@@ -9,8 +9,8 @@ export const getData = (onSuccess, onFail) => {
       }
       throw new Error(`${response.status} ${response.statusText}`);
     })
-    .then(onSuccess)
-    .catch(onFail);
+    .catch(onFail)
+    .then(onSuccess);
 };
 
 export const sendData = (onSuccess, onFail, body) => {
