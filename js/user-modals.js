@@ -1,6 +1,6 @@
 import { isEscEvent } from './utils.js';
 
-export const onSuccessModal = () => {
+export const onSuccessOpenModal = () => {
   const successModalTemplate = document.querySelector('#success')
     .content
     .querySelector('.success');
@@ -21,11 +21,11 @@ export const onSuccessModal = () => {
   });
 };
 
-export const onFailModal = (isLoadingImages) => {
+export const onFailOpenModal = (isLoading) => {
   const failModalTemplate = document.querySelector('#error')
     .content
     .querySelector('.error');
-  if (isLoadingImages) {
+  if (isLoading) {
     failModalTemplate.querySelector('.error__title').innerHTML = 'Ошибка загрузки с сервера';
     failModalTemplate.querySelector('.error__button').classList.add('hidden');
   }
