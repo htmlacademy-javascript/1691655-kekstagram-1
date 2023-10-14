@@ -86,6 +86,8 @@ toDefaultFormVaues();
 const closeEditImageForm = () => {
   editImageContainer.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
+  editImageForm.querySelector('#upload-submit').disabled = false;
+  editedImage.src = 'img/upload-default-image.jpg';
   editImageForm.reset();
   toDefaultFormVaues();
 };
@@ -227,12 +229,14 @@ export const setFormSubmit = (onSuccess, onFail) => {
   editImageForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
     pristine.validate();
+    editImageForm.querySelector('#upload-submit').disabled = true;
     sendData(
       () => onSuccess(),
       () => onFail(),
       new FormData(evt.target)
-    );
-    closeEditImageForm();
+    )
+      .then(() => closeEditImageForm());
+
   });
 
 };

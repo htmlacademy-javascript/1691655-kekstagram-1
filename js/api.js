@@ -12,8 +12,8 @@ export const getData = (onSuccess, onFail) => {
     .then(onSuccess);
 };
 
-export const sendData = (onSuccess, onFail, body) => {
-  fetch(SERVER_POST_URL,
+export const sendData = async (onSuccess, onFail, body) => {
+  const result = await fetch(SERVER_URL,
     {
       method: 'POST',
       body,
@@ -26,4 +26,6 @@ export const sendData = (onSuccess, onFail, body) => {
         onFail();
       }
     });
+
+  return result;
 };
