@@ -1,8 +1,7 @@
-const SERVER_GET_URL = 'https://28.javascript.pages.academy/kekstagram/data';
-const SERVER_POST_URL = 'https://28.javascript.pages.academy/kekstagram';
+const SERVER_URL = 'https://28.javascript.pages.academy/kekstagram';
 
 export const getData = (onSuccess, onFail) => {
-  fetch(SERVER_GET_URL)
+  fetch(`${SERVER_URL}/data`)
     .then((response) => {
       if (response.ok) {
         return response.json();
