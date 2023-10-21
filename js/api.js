@@ -1,8 +1,7 @@
-const SERVER_GET_URL = 'https://28.javascript.pages.academy/kekstagram/data';
-const SERVER_POST_URL = 'https://28.javascript.pages.academy/kekstagram';
+const SERVER_URL = 'https://28.javascript.pages.academy/kekstagram';
 
 export const getData = (onSuccess, onFail) => {
-  fetch(SERVER_GET_URL)
+  fetch(`${SERVER_URL}/data`)
     .then((response) => {
       if (response.ok) {
         return response.json();
@@ -13,8 +12,8 @@ export const getData = (onSuccess, onFail) => {
     .then(onSuccess);
 };
 
-export const sendData = (onSuccess, onFail, body) => {
-  fetch(SERVER_POST_URL,
+export const sendData = async (onSuccess, onFail, body) => {
+  const result = await fetch(SERVER_URL,
     {
       method: 'POST',
       body,
@@ -27,4 +26,6 @@ export const sendData = (onSuccess, onFail, body) => {
         onFail();
       }
     });
+
+  return result;
 };

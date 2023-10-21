@@ -10,7 +10,6 @@ import { debounce } from './utils.js';
 getData(
   (posts) => {
     const filtersContainer = document.querySelector('.img-filters');
-
     drawPicutres(posts);
     filtersContainer.classList.remove('img-filters--inactive');
     setFilter(debounce(() => drawPicutres(posts), 500));
