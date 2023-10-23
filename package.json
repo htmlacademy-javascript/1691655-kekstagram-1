@@ -17,9 +17,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "nouislider": "^15.7.1",
-    "pristine": "^0.0.1",
-    "pristinejs": "^1.1.0"
+    "nouislider": "15.7.1",
+    "pristine": "0.0.1",
+    "pristinejs": "1.1.0"
   },
   "scripts": {
     "start": "browser-sync start --server --no-ui --files \"js/**/*.js\"",
