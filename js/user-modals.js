@@ -26,7 +26,7 @@ export const onFailOpenModal = (isLoading) => {
     .content
     .querySelector('.error');
   if (isLoading) {
-    failModalTemplate.querySelector('.error__title').innerHTML = 'Ошибка загрузки с сервера';
+    failModalTemplate.querySelector('.error__title').textContent = 'Ошибка загрузки с сервера';
     failModalTemplate.querySelector('.error__button').classList.add('hidden');
   }
   const failWindow = failModalTemplate.cloneNode(true);

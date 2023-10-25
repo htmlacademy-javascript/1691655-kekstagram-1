@@ -206,7 +206,7 @@ pristine.addValidator(
   'ошибка при вводе хэштегов'
 );
 hashtagsInput.addEventListener('keydown', (evt) => {
-  if (evt.key === 'Escape' || evt.key === 'Esc') {
+  if (isEscEvent(evt)) {
     evt.stopPropagation();
   }
 });

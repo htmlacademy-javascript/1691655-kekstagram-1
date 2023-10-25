@@ -1,4 +1,3 @@
-// import { posts } from './pictures.js';
 import { isEscEvent } from './utils.js';
 
 const ADD_POSTS_NUMBER = 5;
