@@ -7,12 +7,14 @@ import { onFailOpenModal, onSuccessOpenModal } from './user-modals.js';
 import { setFilter } from './filters.js';
 import { debounce } from './utils.js';
 
+const TIMEOUT_DELAY = 500;
+
 getData(
   (posts) => {
     const filtersContainer = document.querySelector('.img-filters');
     drawPicutres(posts);
     filtersContainer.classList.remove('img-filters--inactive');
-    setFilter(debounce(() => drawPicutres(posts), 500));
+    setFilter(debounce(() => drawPicutres(posts), TIMEOUT_DELAY));
   },
   () => onFailOpenModal(true)
 );
