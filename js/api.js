@@ -13,7 +13,7 @@ export const getData = (onSuccess, onFail) => {
 };
 
 export const sendData = async (onSuccess, onFail, body) => {
-  const result = await fetch(SERVER_URL,
+  const result = await fetch(`${SERVER_URL}`,
     {
       method: 'POST',
       body,

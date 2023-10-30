@@ -1,6 +1,6 @@
 
 export const isProperHashtag = (hashtag) => {
-  const regexExp = /^#[^ !@#$%^&*(),.?":{}|<>]+$/gi;
+  const regexExp = /^#[a-zа-яё0-9]{1,19}$/i;
 
   return regexExp.test(hashtag) && hashtag.length < 21;
 };

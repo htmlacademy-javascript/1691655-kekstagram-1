@@ -66,21 +66,37 @@ const editedImage = editImageForm.querySelector('.img-upload__preview img');
 const scaleImageInput = editImageForm.querySelector('#scale-value');
 
 let currentScale, currentEffect, currentEffectName;
+
 const convertScaleStringToDigit = (strValue) => parseInt(strValue.slice(0, -1), 10) / 100;
-const setImageScaleValue = (scale) => {
+
+const pristine = new Pristine (editImageForm, {
+  classTo: 'img-upload__field-wrapper',
+  errorTextParent: 'img-upload__field-wrapper',
+});
+
+const setImageScale = (scale) => {
   scaleImageInput.setAttribute('value', scale);
   editedImage.style.transform = `scale(${convertScaleStringToDigit(scale)})`;
 };
+const changeImageScale = (changeDirection) => {
+  if (changeDirection) {
+    currentScale = IMAGE_SCALE_VALUES[Math.max(0, IMAGE_SCALE_VALUES.indexOf(currentScale) - 1)];
+  } else {
+    currentScale = IMAGE_SCALE_VALUES[Math.min(IMAGE_SCALE_VALUES.length - 1, IMAGE_SCALE_VALUES.indexOf(currentScale) + 1)];
+  }
+  setImageScale(currentScale);
+};
+
 const toDefaultFormVaues = () => {
   currentScale = DEFAULT_IMAGE_SCALE;
-  setImageScaleValue(currentScale);
+  setImageScale(currentScale);
   editedImage.style = '';
   editedImage.className = '';
   currentEffect = null;
   currentEffectName = null;
   effectLevelContainer.classList.add('hidden');
+  pristine.reset();
 };
-
 toDefaultFormVaues();
 
 const closeEditImageForm = () => {
@@ -114,20 +130,10 @@ fileUploadInput.addEventListener('change', () => {
 // изменение масштаба изображения
 editImageForm
   .querySelector('.scale__control--smaller')
-  .addEventListener('click', () => {
-    if (currentScale !== IMAGE_SCALE_VALUES[0]) {
-      currentScale = IMAGE_SCALE_VALUES[Math.max(0, IMAGE_SCALE_VALUES.indexOf(currentScale) - 1)];
-      setImageScaleValue(currentScale);
-    }
-  });
+  .addEventListener('click', () => changeImageScale(true));
 editImageForm
   .querySelector('.scale__control--bigger')
-  .addEventListener('click', () => {
-    if (currentScale !== IMAGE_SCALE_VALUES[IMAGE_SCALE_VALUES.length - 1]) {
-      currentScale = IMAGE_SCALE_VALUES[Math.min(IMAGE_SCALE_VALUES.length - 1, IMAGE_SCALE_VALUES.indexOf(currentScale) + 1)];
-      setImageScaleValue(currentScale);
-    }
-  });
+  .addEventListener('click', () => changeImageScale(false));
 
 // применение эффектов наложения
 const imageEffectsSet = editImageContainer.querySelector('.img-upload__effects');
@@ -137,8 +143,6 @@ const effectLevelValue = effectLevelContainer.querySelector('.effect-level__valu
 // обработчики
 const onChangeEffect = (evt) => {
   evt.preventDefault();
-  currentScale = DEFAULT_IMAGE_SCALE;
-  setImageScaleValue(currentScale);
   currentEffectName = evt.target.value;
   currentEffect = EFFECTS[currentEffectName];
 
@@ -178,22 +182,15 @@ const onChangeEffect = (evt) => {
     sliderElement.noUiSlider.destroy();
   }
 };
-
 imageEffectsSet.addEventListener('change', onChangeEffect);
 
 // валидация полей хэштегов и комментария
-const pristine = new Pristine (editImageForm, {
-  classTo: 'img-upload__field-wrapper',
-  errorTextParent: 'img-upload__field-wrapper',
-});
-
-// условие по хэштегам
 const hashtagsInput = editImageContainer.querySelector('.text__hashtags');
 const validateHashtags = (hashtagsString) => {
   if (hashtagsString.trim().length === 0) {
     return true;
   }
-  const hashtags = hashtagsString.trim().split(/\s+/);
+  const hashtags = hashtagsString.trim().toLowerCase().split(/\s+/);
   const isEveryHashtags = hashtags.every(isProperHashtag);
   const isHashtagUnique = new Set(hashtags).size === hashtags.length;
   const isAvailableHashtagsAmount = hashtags.length <= MAX_HASHTAGS_NUMBER;
@@ -219,13 +216,12 @@ pristine.addValidator(
   'ошибка при вводе комментария'
 );
 commnentsInput.addEventListener('keydown', (evt) => {
-  if (evt.key === 'Escape' || evt.key === 'Esc') {
+  if (isEscEvent(evt)) {
     evt.stopPropagation();
   }
 });
 
 export const setFormSubmit = (onSuccess, onFail) => {
-
   editImageForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
     pristine.validate();
@@ -236,7 +232,5 @@ export const setFormSubmit = (onSuccess, onFail) => {
       new FormData(evt.target)
     )
       .then(() => closeEditImageForm());
-
   });
-
 };
